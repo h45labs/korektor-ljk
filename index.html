@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Korektor LJK — Dashboard | HijraH45</title>
+<style>
+:root{
+  --p:#4f46e5; --p2:#7c3aed; --p3:#a855f7;
+  --grad:linear-gradient(135deg,#4f46e5,#7c3aed);
+  --grad-g:linear-gradient(135deg,#10b981,#059669);
+  --ok:#059669; --bad:#e11d48; --bad-soft:#fff1f2;
+  --bg:#f1f4f9; --card:#ffffff; --line:#e8ecf4;
+  --txt:#0f172a; --sub:#64748b;
+  --r:18px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 10px 30px -12px rgba(16,24,40,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:
+    radial-gradient(800px 300px at 90% -50px, rgba(168,85,247,.08), transparent 60%),
+    radial-gradient(700px 300px at -10% 120px, rgba(79,70,229,.07), transparent 60%),
+    var(--bg);
+  color:var(--txt);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.55;padding-bottom:120px;
+}
+::selection{background:#c7d2fe}
+.hero{position:relative;overflow:hidden;text-align:center;color:#fff;
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 55%,#a855f7 100%);
+  padding:30px 16px 68px;border-radius:0 0 30px 30px}
+.hero::before,.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+.hero::before{width:240px;height:240px;top:-90px;left:-70px}
+.hero::after{width:190px;height:190px;bottom:-80px;right:-50px;background:rgba(255,255,255,.09)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);
+  border-radius:999px;padding:6px 16px;font-size:13px;font-weight:600;position:relative;z-index:1}
+.hero h1{margin:12px 0 4px;font-size:clamp(24px,5vw,32px);letter-spacing:-.5px;position:relative;z-index:1}
+.hero p{margin:0;font-size:14px;opacity:.92;position:relative;z-index:1}
+.hero-tags{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+.hero-tags span{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  border-radius:10px;padding:3px 10px;font-size:11.5px;font-weight:600}
+.tabs{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;
+  transform:translateX(-50%);display:flex;gap:4px;z-index:50;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:999px;padding:6px;
+  box-shadow:0 12px 32px -8px rgba(16,24,40,.28)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;
+  min-width:80px;padding:8px 12px;border:none;background:none;border-radius:999px;
+  font-size:11px;font-weight:600;color:var(--sub);transition:.2s;font-family:inherit}
+.tabs a .ti{font-size:19px;line-height:1.2;transition:transform .2s}
+.tabs a:active .ti{transform:scale(.9)}
+.tabs a.active{background:var(--grad);color:#fff;box-shadow:0 6px 16px -4px rgba(79,70,229,.5)}
+.tabs a:not(.active):hover{color:var(--p)}
+@media(min-width:768px){.tabs a{min-width:104px;font-size:12px}}
+.page{max-width:880px;margin:-46px auto 0;padding:0 14px;position:relative;z-index:2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-title b{font-size:15.5px;letter-spacing:-.2px}
+.step-num{flex-shrink:0;width:30px;height:30px;border-radius:10px;background:var(--grad);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:none;border-radius:12px;padding:11px 18px;font-size:14.5px;font-weight:700;
+  font-family:inherit;cursor:pointer;color:#fff;min-height:44px;text-decoration:none;
+  transition:transform .08s ease,filter .2s,box-shadow .2s;user-select:none}
+.btn:active{transform:scale(.96)}
+.b1{background:var(--grad);box-shadow:0 6px 16px -6px rgba(79,70,229,.55)}
+.b1:hover{filter:brightness(1.07)}
+.b3{background:var(--grad-g);box-shadow:0 6px 16px -6px rgba(16,185,129,.5)}
+.b3:hover{filter:brightness(1.06)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:16px 8px;text-align:center;box-shadow:var(--shadow)}
+.stat .v{font-size:clamp(19px,4vw,26px);font-weight:800;letter-spacing:-.5px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{font-size:11px;font-weight:600;color:var(--sub);margin-top:2px}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(min-width:768px){.menu{grid-template-columns:repeat(3,1fr)}}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:16px;text-decoration:none;color:inherit;box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:6px}
+.mcard:hover{transform:translateY(-3px);box-shadow:0 12px 28px -10px rgba(16,24,40,.2)}
+.mcard .mi{width:44px;height:44px;border-radius:12px;background:#eef2ff;
+  display:flex;align-items:center;justify-content:center;font-size:22px}
+.mcard b{font-size:14px;letter-spacing:-.2px}
+.mcard span{font-size:12px;color:var(--sub);line-height:1.5}
+.mcard .go{margin-top:auto;font-size:12px;font-weight:700;color:var(--p);display:flex;align-items:center;gap:4px}
+.mcard.hi{border-color:#c7d2fe;background:linear-gradient(180deg,#eef2ff,#fff)}
+.mcard .pill{display:inline-block;background:var(--grad-g);color:#fff;border-radius:999px;
+  padding:2px 9px;font-size:10px;font-weight:800;letter-spacing:.3px;width:fit-content}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;font-weight:600}
+.flow .fs{background:#eef2ff;color:#4338ca;border-radius:10px;padding:6px 11px}
+.flow .fa{color:var(--p);font-weight:800}
+footer{text-align:center;color:var(--sub);font-size:13px;padding:16px 10px 6px}
+footer a{color:var(--p);font-weight:700;text-decoration:none}
+footer .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+  color:#94a3b8;background:#fff;border:1px solid var(--line);border-radius:999px;
+  display:inline-block;padding:4px 14px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-badge">📊 Dashboard · Korektor LJK</div>
+  <h1>📝 KOREKTOR—LJK</h1>
+  <p>Koreksi lembar jawaban ujian via kamera HP · otomatis · gratis</p>
+  <div class="hero-tags">
+    <span>🏫 Versi Sekolah</span><span>⚡ Versi Offline</span><span>🆓 Open Source</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">👋</span><b>Selamat datang, Guru!</b></div>
+    <p style="margin:0 0 12px;font-size:14px;color:var(--sub)">
+      Foto lembar jawaban siswa → aplikasi mendeteksi bulatan otomatis → nilai langsung jadi.
+      Pilih salah satu untuk mulai:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn b3" href="local.html">🚀 Mulai Koreksi (Offline)</a>
+      <a class="btn b1" href="install.html">🏫 Pasang Versi Sekolah</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">2</div><div class="l">Versi Aplikasi</div></div>
+    <div class="stat"><div class="v">40</div><div class="l">Soal / Lembar</div></div>
+    <div class="stat"><div class="v">Rp0</div><div class="l">Biaya Lisensi</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">🧭</span><b>Menu Navigasi</b></div>
+    <div class="menu" style="margin:0">
+      <a class="mcard hi" href="local.html">
+        <span class="pill">★ PALING CEPAT</span>
+        <div class="mi">⚡</div><b>Aplikasi Offline</b>
+        <span>Buka langsung, data di perangkat, cocok untuk semua guru.</span>
+        <span class="go">Buka →</span>
+      </a>
+      <a class="mcard" href="install.html">
+        <div class="mi">📦</div><b>Installer Sekolah</b>
+        <span>Kode Code.gs &amp; Index.html siap salin + langkah deploy Apps Script.</span>
+        <span class="go">Buka →</span>
+      </a>
+      <a class="mcard" href="panduan.html">
+        <div class="mi">🎓</div><b>Panduan Cepat</b>
+        <span>Ringkasan 1 halaman: instal, pakai, dan tips scan akurat.</span>
+        <span class="go">Buka →</span>
+      </a>
+      <a class="mcard" href="README.html">
+        <div class="mi">📚</div><b>Dokumentasi</b>
+        <span>Arsitektur, struktur data Sheets, pengaturan lanjutan &amp; troubleshooting.</span>
+        <span class="go">Buka →</span>
+      </a>
+      <a class="mcard" href="https://github.com/h45labs/korektor-ljk">
+        <div class="mi">🐙</div><b>Repositori GitHub</b>
+        <span>Kode sumber lengkap, riwayat perubahan, dan kontribusi.</span>
+        <span class="go">Buka ↗</span>
+      </a>
+      <a class="mcard" href="https://mtsdarulfalahctr.blogspot.com">
+        <div class="mi">🕌</div><b>Sekolah</b>
+        <span>Situs resmi MTS Darul Falah — Citeureup, Bogor.</span>
+        <span class="go">Buka ↗</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">🔁</span><b>Alur Koreksi Singkat</b></div>
+    <div class="flow">
+      <span class="fs">🔑 Kunci</span><span class="fa">→</span>
+      <span class="fs">🖨 Template</span><span class="fa">→</span>
+      <span class="fs">📸 Foto LJK</span><span class="fa">→</span>
+      <span class="fs">✋ 4 Sudut × Blok</span><span class="fa">→</span>
+      <span class="fs">🔍 Deteksi</span><span class="fa">→</span>
+      <span class="fs">✅ Review</span><span class="fa">→</span>
+      <span class="fs">💾 Simpan</span>
+    </div>
+    <p style="margin:10px 0 0;font-size:12.5px;color:var(--sub)">
+      Satu foto untuk 4 blok soal (1–40). Hasil deteksi selalu bisa diperbaiki manual sebelum disimpan.</p>
+  </div>
+
+</div>
+
+<div class="tabs">
+  <a class="active" href="index.html"><span class="ti">🏠</span><span>Beranda</span></a>
+  <a href="local.html"><span class="ti">⚡</span><span>Aplikasi</span></a>
+  <a href="install.html"><span class="ti">📦</span><span>Installer</span></a>
+  <a href="panduan.html"><span class="ti">🎓</span><span>Panduan</span></a>
+  <a href="README.html"><span class="ti">📚</span><span>Docs</span></a>
+</div>
+
+<footer>
+  <strong>Developer by. <a href="https://github.com/h45labs">HijraH45</a></strong><br>
+  <span class="mono">KOREKTOR—LJK · WEB v2.0 · NO FRAMEWORK</span>
+</footer>
+
+</body>
+</html>

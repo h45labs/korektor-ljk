@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installer — Korektor LJK Web | HijraH45</title>
+<style>
+:root{--p:#1565c0;--pd:#0d47a1;--ok:#2e7d32;--line:#dde3ea}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f0f2f5;color:#1f2937;line-height:1.6}
+header{background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;padding:26px 16px;text-align:center}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:14px;opacity:.92}
+main{max-width:860px;margin:0 auto;padding:14px 12px 70px}
+section{background:#fff;border-radius:12px;padding:18px;margin:14px 0;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+h2{color:var(--p);font-size:18px;margin:0 0 10px;border-bottom:2px solid var(--line);padding-bottom:6px}
+ol{margin:0;padding-left:22px}
+ol li{margin:7px 0;font-size:14.5px}
+.file-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.file-head h2{border:none;padding:0;margin:0;flex:1}
+.tag{background:#e3f2fd;color:var(--pd);border-radius:12px;padding:2px 10px;font-size:12px;font-weight:bold}
+.btns{margin:10px 0 4px;display:flex;gap:8px;flex-wrap:wrap}
+.btns button{border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:bold;cursor:pointer;color:#fff}
+.b-copy{background:var(--p)}.b-dl{background:var(--ok)}.b-tg{background:#607d8b}
+.btns button:hover{opacity:.9}
+textarea{width:100%;height:0;opacity:0;position:absolute;left:-9999px;resize:none;font-family:Consolas,Menlo,monospace;font-size:12.5px;tab-size:2}
+textarea.open{position:static;left:0;opacity:1;height:360px;overflow:auto;margin-top:10px;padding:14px;border:1px solid #334;border-radius:10px;background:#0f172a;color:#e2e8f0;white-space:pre}
+.hint{font-size:13px;color:#64748b;margin-top:6px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:#1f2937;color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;opacity:0;transition:.3s;z-index:99;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.note{background:#fff8e1;border-left:5px solid #f57f17;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:12px}
+footer{text-align:center;color:#64748b;font-size:13px;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📦 Installer — Korektor LJK Web</h1>
+  <p>Salin dua kode di bawah ke Google Apps Script → deploy → jadi!<br>
+     oleh <b>HijraH45</b> · github.com/h45labs</p>
+</header>
+<main>
+
+<section>
+  <h2>🚀 5 Langkah Instalasi</h2>
+  <ol>
+    <li>Buat <b>Spreadsheet baru</b> di sheets.google.com → menu <b>Extensions → Apps Script</b></li>
+    <li>Hapus isi editor, tempel kode <b>Code.gs</b> (klik 📋 Salin pada kartu pertama)</li>
+    <li>Klik <b>＋ → HTML</b>, beri nama <b>Index</b> (harus persis, tanpa .html), hapus isinya, tempel kode <b>Index.html</b> (kartu kedua)</li>
+    <li><b>Simpan</b> (Ctrl+S) → <b>Deploy → New deployment → Web app</b><br>
+        <small>Execute as: <b>Me</b> · Who has access: <b>Anyone</b> → Deploy → izinkan akses</small></li>
+    <li>Salin URL Web App (berakhiran <b>/exec</b>) → buka dari HP → selesai 🎉</li>
+  </ol>
+  <div class="note">⚠️ Jika kode pernah diubah: <b>Deploy → Manage deployments → ✏️ → New version → Deploy</b> agar perubahan tampil di URL /exec.</div>
+</section>
+
+<section>
+  <div class="file-head">
+    <h2>📄 Code.gs</h2><span class="tag">BACKEND</span>
+  </div>
+  <div class="btns">
+    <button class="b-copy" onclick="copyCode('gs')">📋 Salin Kode</button>
+    <button class="b-dl" onclick="dl('gs')">⬇️ Unduh</button>
+    <button class="b-tg" onclick="tg('gs',this)">▼ Tampilkan Kode</button>
+  </div>
+<textarea id="ta-gs" spellcheck="false" readonly>/*** KOREKTOR LJK - BACKEND GOOGLE APPS SCRIPT ***/
+const SHEET_HASIL = 'HasilKoreksi';
+const SHEET_KUNCI = 'KunciJawaban';
+
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('Korektor LJK Web')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function getSheet_(name, headers) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(name);
+  if (!sh) {
+    sh = ss.insertSheet(name);
+    if (headers) sh.appendRow(headers);
+  }
+  return sh;
+}
+
+// ---- Kunci Jawaban ----
+function simpanKunci(jumlahSoal, jumlahPilihan, kunci) {
+  const sh = getSheet_(SHEET_KUNCI, ['Jumlah Soal', 'Jumlah Pilihan', 'Kunci']);
+  sh.clear();
+  sh.appendRow(['Jumlah Soal', 'Jumlah Pilihan', 'Kunci']);
+  sh.appendRow([jumlahSoal, jumlahPilihan, JSON.stringify(kunci)]);
+  return true;
+}
+
+function ambilKunci() {
+  const sh = getSheet_(SHEET_KUNCI, null);
+  if (sh.getLastRow() < 2) return null;
+  const r = sh.getRange(2, 1, 1, 3).getValues()[0];
+  return { jumlahSoal: r[0], jumlahPilihan: r[1], kunci: JSON.parse(r[2]) };
+}
+
+// ---- Hasil Koreksi ----
+function simpanHasil(d) {
+  const sh = getSheet_(SHEET_HASIL, ['Waktu', 'Nama', 'Kelas', 'Jawaban', 'Benar', 'Salah', 'Kosong', 'Nilai']);
+  sh.appendRow([new Date(), d.nama, d.kelas, d.jawaban, d.benar, d.salah, d.kosong, d.nilai]);
+  return true;
+}
+
+function ambilHasil() {
+  const sh = getSheet_(SHEET_HASIL, null);
+  const n = sh.getLastRow();
+  if (n < 2) return [];
+  const tz = Session.getScriptTimeZone();
+  return sh.getRange(2, 1, n - 1, 8).getValues().map(function(r) {
+    return {
+      waktu: Utilities.formatDate(new Date(r[0]), tz, 'dd/MM/yyyy HH:mm'),
+      nama: r[1], kelas: r[2], jawaban: r[3],
+      benar: r[4], salah: r[5], kosong: r[6], nilai: r[7]
+    };
+  });
+}</textarea>
+  <p class="hint">Sheet <b>KunciJawaban</b> dan <b>HasilKoreksi</b> dibuat otomatis saat pertama dipakai.</p>
+</section>
+
+<section>
+  <div class="file-head">
+    <h2>📄 Index.html</h2><span class="tag">FRONTEND</span>
+  </div>
+  <div class="btns">
+    <button class="b-copy" onclick="copyCode('html')">📋 Salin Kode</button>
+    <button class="b-dl" onclick="dl('html')">⬇️ Unduh</button>
+    <button class="b-tg" onclick="tg('html',this)">▼ Tampilkan Kode</button>
+  </div>
+<textarea id="ta-html" spellcheck="false" readonly><!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--p:#1565c0;--ok:#2e7d32;--bad:#c62828}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#f0f2f5;padding-bottom:80px}
+header{background:var(--p);color:#fff;padding:14px;text-align:center;font-weight:bold;font-size:18px}
+.tabs{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;box-shadow:0 -2px 6px rgba(0,0,0,.1);z-index:50}
+.tabs button{flex:1;padding:12px;border:none;background:none;font-size:14px;color:#666;cursor:pointer}
+.tabs button.active{color:var(--p);font-weight:bold;border-top:3px solid var(--p)}
+.page{display:none;padding:12px;max-width:720px;margin:0 auto}
+.page.active{display:block}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+button.act{background:var(--p);color:#fff;border:none;padding:10px 16px;border-radius:6px;font-size:15px;margin:4px 2px;cursor:pointer}
+button.gray{background:#607d8b}button.green{background:var(--ok)}button.red{background:var(--bad)}
+input,select{padding:8px;font-size:15px;border:1px solid #ccc;border-radius:6px;width:100%}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0}
+video{width:100%;border-radius:8px;background:#000;display:none}
+#canvas{width:100%;border:1px solid #999;border-radius:8px;display:none;cursor:crosshair}
+.keyRow{display:flex;align-items:center;gap:4px;margin:3px 0}
+.keyRow span{width:36px;font-size:13px}
+.keyRow button{flex:1;padding:7px 0;border:1px solid #ccc;background:#fff;border-radius:5px;font-size:13px;cursor:pointer}
+.keyRow button.sel{background:var(--p);color:#fff;border-color:var(--p)}
+.revRow{display:flex;align-items:center;gap:4px;margin:3px 0;flex-wrap:wrap}
+.revRow span{width:36px;font-size:13px;font-weight:bold}
+.revRow button{width:34px;height:34px;border:1px solid #ccc;background:#fff;border-radius:5px;font-size:13px;cursor:pointer}
+.revRow button.sel{background:var(--ok);color:#fff;border-color:var(--ok)}
+.revRow button.sel.wrong{background:var(--bad);border-color:var(--bad)}
+#summary{font-size:16px;text-align:center;padding:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #ddd;padding:6px;text-align:center}
+th{background:#e3f2fd}
+.hint{font-size:12px;color:#555;margin:6px 0}
+.status{font-size:13px;color:var(--ok);margin-top:6px}
+.blkTag{display:inline-block;margin:2px;padding:3px 8px;border-radius:4px;background:#eee;font-size:12px}
+.blkTag.done{background:#c8e6c9}
+#scanStatus{font-size:13px;line-height:1.7}
+#tplOverlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;display:none;overflow:auto;padding:10px;text-align:center}
+#tplOverlay img{max-width:100%;border:5px solid #fff;background:#fff}
+</style>
+</head>
+<body>
+<header>📝 Korektor LJK — MTS Darul Falah</header>
+
+<div class="tabs">
+  <button id="tabBtn-scan" class="active" onclick="showTab('scan')">📸 Koreksi</button>
+  <button id="tabBtn-key" onclick="showTab('key')">🔑 Kunci</button>
+  <button id="tabBtn-hasil" onclick="showTab('hasil')">📊 Hasil</button>
+</div>
+
+<!-- ============ TAB KOREKSI ============ -->
+<div class="page active" id="page-scan">
+  <div class="card">
+    <b>1. Ambil Foto Lembar Jawaban</b>
+    <div class="row">
+      <button class="act" onclick="openCamera()">📷 Buka Kamera</button>
+      <label class="act gray" style="display:inline-block;text-align:center">📁 Unggah Foto
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+      </label>
+    </div>
+    <video id="video" autoplay playsinline></video>
+    <div class="row" id="shotRow" style="display:none">
+      <button class="act green" onclick="capture()">✅ Ambil Gambar</button>
+      <button class="act gray" onclick="closeCamera()">✖ Tutup</button>
+    </div>
+    <div id="scanStatus" class="card" style="background:#fffde7"></div>
+    <p class="hint" id="cornerHint" style="display:none">
+      👉 <b>Ketuk 4 sudut KOTAK blok jawaban</b> (kotak yang berisi bulatan saja,
+      tanpa huruf A–D di atas &amp; tanpa nomor di kiri), urutannya:<br>
+      ① Kiri-Atas → ② Kanan-Atas → ③ Kanan-Bawah → ④ Kiri-Bawah<br>
+      Satu foto bisa dipakai untuk semua blok — tidak perlu foto ulang.
+    </p>
+    <canvas id="canvas"></canvas>
+    <button class="act gray" id="btnReset" style="display:none" onclick="resetCorners()">↺ Ulangi Pilih Sudut</button>
+    <button class="act red" id="btnRestart" style="display:none" onclick="resetScan()">🗑 Mulai Ulang Scan</button>
+  </div>
+
+  <div class="card" id="detectCard" style="display:none">
+    <b>2. Deteksi Jawaban</b>
+    <div class="row"><span style="white-space:nowrap">Sensitivitas</span>
+      <input type="range" id="thresh" min="0.2" max="0.7" step="0.05" value="0.45" style="flex:1"></div>
+    <button class="act" onclick="detect()">🔍 Deteksi Blok Ini</button>
+    <p class="hint">Jika banyak bulatan terisi tapi terdeteksi kosong → <b>turunkan</b> sensitivitas.<br>
+    Jika bulatan kosong ikut terdeteksi → <b>naikkan</b>.</p>
+  </div>
+
+  <div class="card" id="reviewCard" style="display:none">
+    <b>3. Periksa &amp; Perbaiki Jawaban</b>
+    <p class="hint">Ketuk pilihan untuk memperbaiki hasil deteksi.<br>🟩 Hijau = sesuai kunci · 🟥 Merah = salah</p>
+    <div class="row"><input id="nama" placeholder="Nama Siswa"></div>
+    <div class="row"><input id="kelas" placeholder="Kelas (opsional)"></div>
+    <div id="reviewGrid" style="max-height:340px;overflow:auto"></div>
+    <div id="summary" class="card"></div>
+    <button class="act green" id="btnSave" onclick="saveResult(this)">💾 Simpan Hasil</button>
+  </div>
+</div>
+
+<!-- ============ TAB KUNCI ============ -->
+<div class="page" id="page-key">
+  <div class="card">
+    <b>Pengaturan Kunci Jawaban</b>
+    <div class="row"><span style="width:120px">Jumlah Soal</span>
+      <input type="number" id="numQ" value="40" min="1" max="60"></div>
+    <div class="row"><span style="width:120px">Jumlah Pilihan</span>
+      <select id="numC"><option value="3">3 (A–C)</option><option value="4" selected>4 (A–D)</option><option value="5">5 (A–E)</option></select></div>
+    <button class="act" onclick="buildKeyUI()">Buat Tabel Kunci</button>
+    <button class="act gray" onclick="makeTemplate()">🖨 Buat Template LJK</button>
+    <p class="hint">Template format MTS Darul Falah: 10 soal per blok, bulatan dihitamkan pulpen hitam. Cetak A4, lalu fotokopi.</p>
+    <div id="keyGrid" style="max-height:400px;overflow:auto"></div>
+    <button class="act green" id="btnSaveKey" style="display:none" onclick="saveKey()">💾 Simpan Kunci</button>
+    <div class="status" id="keyStatus"></div>
+  </div>
+</div>
+
+<!-- ============ TAB HASIL ============ -->
+<div class="page" id="page-hasil">
+  <div class="card">
+    <button class="act" onclick="loadResults()">🔄 Muat Data Hasil</button>
+    <div id="hasilWrap" style="overflow:auto"></div>
+  </div>
+</div>
+
+<div id="tplOverlay" onclick="this.style.display='none'">
+  <p style="color:#fff;font-size:13px">Tekan lama gambar → Simpan gambar / screenshot, lalu cetak di A4. (Ketuk untuk menutup)</p>
+  <img id="tplImg">
+</div>
+
+<script>
+/* ================= IDENTITAS SEKOLAH (edit bebas) ================= */
+var SCHOOL = {
+  yayasan:'YAYASAN "BUDINIAH"',
+  sekolah:'MADRASAH TSANAWIYAH (MTS) DARUL FALAH',
+  alamat :'Jl. Golf Jagorawi No. 2 Karanggan, Puspasari, Citeureup, Bogor',
+  kontak :'Kode Pos 16810 | Web. https://mtsdarulfalahctr.blogspot.com',
+  judul1 :'LEMBAR JAWABAN',
+  judul2 :'SUMATIF TENGAH SEMESTER (STS) GANJIL',
+  tahun  :'TAHUN PELAJARAN 2026/2027'
+};
+
+/* ================= VARIABEL GLOBAL ================= */
+var Q_PER_BLOCK = 10;              // sesuai template: 10 soal per blok
+var KEY = null;                    // {jumlahSoal, jumlahPilihan, kunci:[..]}
+var corners = [], currentAns = null, currentScore = null, imgData = null, stream = null;
+var scanStart = 0;                 // indeks soal pertama blok yang belum discan
+var srcCanvas = document.getElementById('canvas');
+var srcCtx = srcCanvas.getContext('2d', {willReadFrequently:true});
+var baseCanvas = document.createElement('canvas');
+var baseCtx = baseCanvas.getContext('2d', {willReadFrequently:true});
+
+/* ================= NAVIGASI ================= */
+function showTab(t){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+t).classList.add('active');
+  document.getElementById('tabBtn-'+t).classList.add('active');
+}
+
+/* ================= KUNCI JAWABAN ================= */
+function buildKeyUI(){
+  var n = +numQ.value, c = +numC.value;
+  if(!n || n<1){ alert('Jumlah soal tidak valid'); return; }
+  var L = 'ABCDE'.slice(0,c), g = document.getElementById('keyGrid');
+  g.innerHTML = '';
+  KEY = {jumlahSoal:n, jumlahPilihan:c, kunci:new Array(n).fill(-1)};
+  for(var i=0;i<n;i++){
+    var d = document.createElement('div'); d.className='keyRow';
+    var h = '<span>'+(i+1)+'.</span>';
+    for(var j=0;j<c;j++) h += '<button onclick="setKey('+i+','+j+',this)">'+L[j]+'</button>';
+    d.innerHTML = h; g.appendChild(d);
+  }
+  document.getElementById('btnSaveKey').style.display='inline-block';
+}
+function setKey(i,j,btn){
+  KEY.kunci[i] = (KEY.kunci[i]===j ? -1 : j);
+  btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));
+  if(KEY.kunci[i]>=0) btn.classList.add('sel');
+}
+function saveKey(){
+  if(KEY.kunci.includes(-1) && !confirm('Masih ada soal tanpa kunci (dianggap kosong). Lanjutkan?')) return;
+  google.script.run.withSuccessHandler(function(){
+    document.getElementById('keyStatus').textContent='✔ Kunci tersimpan ('+KEY.jumlahSoal+' soal)';
+  }).simpanKunci(KEY.jumlahSoal, KEY.jumlahPilihan, KEY.kunci);
+}
+function loadKey(){
+  google.script.run.withSuccessHandler(function(k){
+    if(k){
+      KEY = k; numQ.value = k.jumlahSoal; numC.value = k.jumlahPilihan;
+      buildKeyUI();
+      k.kunci.forEach(function(v,i){
+        if(v>=0) document.getElementById('keyGrid').children[i].children[v+1].classList.add('sel');
+      });
+      document.getElementById('btnSaveKey').style.display='inline-block';
+      document.getElementById('keyStatus').textContent='✔ Kunci dimuat: '+k.jumlahSoal+' soal';
+    }
+  }).ambilKunci();
+}
+
+/* ================= STATUS SCAN PER BLOK ================= */
+function updateScanStatus(){
+  if(!KEY){ document.getElementById('scanStatus').textContent='Atur kunci jawaban dulu di tab 🔑 Kunci.'; return; }
+  var total=KEY.jumlahSoal, nb=Math.ceil(total/Q_PER_BLOCK), s='';
+  for(var b=0;b<nb;b++){
+    var a=b*Q_PER_BLOCK+1, z=Math.min(total,(b+1)*Q_PER_BLOCK);
+    var done = scanStart >= (b+1)*Q_PER_BLOCK;
+    s += '<span class="blkTag'+(done?' done':'')+'">Soal '+a+'–'+z+(done?' ✔':'')+'</span>';
+  }
+  if(scanStart < total){
+    s += '<br>👉 Blok berikutnya: <b>soal '+(scanStart+1)+'–'+Math.min(scanStart+Q_PER_BLOCK,total)+'</b> — ketuk 4 sudut kotaknya.';
+  } else {
+    s += '<br>✔ Semua blok terdeteksi! Periksa hasil di bawah.';
+  }
+  document.getElementById('scanStatus').innerHTML = s;
+  document.getElementById('btnRestart').style.display = scanStart>0 ? 'inline-block' : 'none';
+}
+function resetScan(){
+  scanStart=0; currentAns=null; currentScore=null; corners=[];
+  document.getElementById('reviewCard').style.display='none';
+  updateScanStatus(); redraw();
+}
+
+/* ================= KAMERA ================= */
+function openCamera(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('Kamera tidak didukung. Gunakan tombol "Unggah Foto".'); return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment', width:{ideal:1920}}, audio:false})
+  .then(function(s){
+    stream = s;
+    var v = document.getElementById('video');
+    v.srcObject = s; v.style.display='block';
+    document.getElementById('shotRow').style.display='flex';
+  })
+  .catch(function(e){ alert('Gagal buka kamera: '+e.message+'\nGunakan "Unggah Foto".'); });
+}
+function closeCamera(){
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  var v = document.getElementById('video');
+  v.srcObject=null; v.style.display='none';
+  document.getElementById('shotRow').style.display='none';
+}
+function capture(){
+  var v = document.getElementById('video');
+  var s = Math.min(1, 1600/v.videoWidth);
+  srcCanvas.width = Math.round(v.videoWidth*s);
+  srcCanvas.height = Math.round(v.videoHeight*s);
+  srcCtx.drawImage(v, 0, 0, srcCanvas.width, srcCanvas.height);
+  closeCamera();
+  afterImageLoaded();
+}
+document.getElementById('fileInput').addEventListener('change', function(e){
+  var f = e.target.files[0]; if(!f) return;
+  var img = new Image();
+  img.onload = function(){
+    var s = Math.min(1, 1600/img.width);
+    srcCanvas.width = Math.round(img.width*s);
+    srcCanvas.height = Math.round(img.height*s);
+    srcCtx.drawImage(img, 0, 0, srcCanvas.width, srcCanvas.height);
+    URL.revokeObjectURL(img.src);
+    afterImageLoaded();
+  };
+  img.src = URL.createObjectURL(f);
+});
+function afterImageLoaded(){
+  baseCanvas.width = srcCanvas.width; baseCanvas.height = srcCanvas.height;
+  baseCtx.drawImage(srcCanvas, 0, 0);
+  imgData = baseCtx.getImageData(0, 0, baseCanvas.width, baseCanvas.height);
+  corners = [];
+  srcCanvas.style.display='block';
+  document.getElementById('cornerHint').style.display='block';
+  document.getElementById('btnReset').style.display='inline-block';
+  document.getElementById('detectCard').style.display='block';
+  document.getElementById('reviewCard').style.display='none';
+  updateScanStatus();
+  redraw();
+}
+
+/* ================= PILIH SUDUT ================= */
+srcCanvas.addEventListener('click', function(e){
+  if(!srcCanvas.width || corners.length>=4) return;
+  if(!KEY){ alert('Atur kunci jawaban dulu di tab 🔑 Kunci!'); showTab('key'); return; }
+  if(scanStart >= KEY.jumlahSoal){ alert('Semua blok sudah discan. Periksa hasil, atau klik "Mulai Ulang Scan".'); return; }
+  var r = srcCanvas.getBoundingClientRect();
+  corners.push({ x:(e.clientX-r.left)*srcCanvas.width/r.width,
+                 y:(e.clientY-r.top)*srcCanvas.height/r.height });
+  redraw();
+  if(corners.length===4)
+    document.getElementById('cornerHint').innerHTML =
+      '✔ 4 sudut dipilih. Sesuaikan sensitivitas bila perlu, lalu klik <b>🔍 Deteksi Blok Ini</b>.';
+});
+function resetCorners(){ corners=[]; redraw(); }
+function redraw(){
+  if(!baseCanvas.width) return;
+  srcCtx.drawImage(baseCanvas, 0, 0);
+  var cols = ['#f44336','#ff9800','#4caf50','#2196f3'];
+  corners.forEach(function(p,i){
+    srcCtx.fillStyle = cols[i];
+    srcCtx.beginPath(); srcCtx.arc(p.x, p.y, 8, 0, 7); srcCtx.fill();
+    srcCtx.fillStyle='#fff'; srcCtx.font='bold 10px Arial';
+    srcCtx.fillText(String(i+1), p.x-3, p.y+3);
+  });
+  if(corners.length===4){
+    srcCtx.strokeStyle='rgba(255,0,0,.6)'; srcCtx.lineWidth=2;
+    srcCtx.beginPath();
+    corners.forEach(function(p,i){ i ? srcCtx.lineTo(p.x,p.y) : srcCtx.moveTo(p.x,p.y); });
+    srcCtx.closePath(); srcCtx.stroke();
+  }
+}
+
+/* ================= DETEKSI OMR (PER BLOK) ================= */
+function detect(){
+  if(corners.length!==4){ alert('Pilih 4 sudut kotak blok dulu!'); return; }
+  if(!currentAns || currentAns.length!==KEY.jumlahSoal)
+    currentAns = new Array(KEY.jumlahSoal).fill(-1);
+  var start = scanStart;
+  var count = Math.min(Q_PER_BLOCK, KEY.jumlahSoal - start);
+  var nC = KEY.jumlahPilihan;
+  var TL=corners[0], TR=corners[1], BR=corners[2], BL=corners[3];
+  var th = +document.getElementById('thresh').value;
+  var r = Math.min(dist(TL,TR)/nC, dist(TL,BL)/count) * 0.26;
+  var terisi = 0;
+  for(var i=0; i<count; i++){
+    var v = (i+0.5)/count, dark = [];
+    for(var c=0; c<nC; c++){
+      var u = (c+0.5)/nC;
+      var px = (1-u)*(1-v)*TL.x + u*(1-v)*TR.x + (1-u)*v*BL.x + u*v*BR.x;
+      var py = (1-u)*(1-v)*TL.y + u*(1-v)*TR.y + (1-u)*v*BL.y + u*v*BR.y;
+      dark.push(sampleDark(px, py, r));
+    }
+    var mx = Math.max.apply(null, dark), idx = dark.indexOf(mx);
+    currentAns[start+i] = (mx >= th) ? idx : -1;
+    if(mx >= th) terisi++;
+  }
+  scanStart += count;
+  updateScanStatus();
+  if(scanStart >= KEY.jumlahSoal){
+    alert('Blok soal '+(start+1)+'–'+(start+count)+' ✔ ('+terisi+' bulatan terdeteksi)\n\nSemua blok selesai! Periksa & perbaiki hasil di bawah.');
+    showReview();
+  } else {
+    alert('Blok soal '+(start+1)+'–'+(start+count)+' ✔ ('+terisi+' bulatan terdeteksi)\n\nLanjut: ketuk 4 sudut blok soal '+(scanStart+1)+'–'+Math.min(scanStart+Q_PER_BLOCK,KEY.jumlahSoal)+' pada foto yang sama.');
+  }
+  resetCorners();
+}
+function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+function sampleDark(cx, cy, r){
+  var d = imgData.data, W = imgData.width, H = imgData.height;
+  var dark=0, tot=0;
+  for(var y=Math.max(0, Math.floor(cy-r)); y<Math.min(H, cy+r); y++){
+    for(var x=Math.max(0, Math.floor(cx-r)); x<Math.min(W, cx+r); x++){
+      var dx=x-cx, dy=y-cy;
+      if(dx*dx+dy*dy > r*r) continue;
+      var i=(y*W+x)*4;
+      if(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2] < 115) dark++;
+      tot++;
+    }
+  }
+  return tot ? dark/tot : 0;
+}
+
+/* ================= REVIEW & SKOR ================= */
+function showReview(){
+  var L='ABCDE'.slice(0, KEY.jumlahPilihan);
+  var g=document.getElementById('reviewGrid'); g.innerHTML='';
+  for(var q=0; q<KEY.jumlahSoal; q++){
+    var d=document.createElement('div'); d.className='revRow';
+    var h='<span>'+(q+1)+'.</span>';
+    for(var c=0; c<KEY.jumlahPilihan; c++)
+      h+='<button onclick="setAns('+q+','+c+')">'+L[c]+'</button>';
+    h+='<button style="width:auto;padding:0 8px" onclick="setAns('+q+',-1)">–</button>';
+    d.innerHTML=h; g.appendChild(d);
+    refreshRow(q);
+  }
+  document.getElementById('reviewCard').style.display='block';
+  updateSummary();
+}
+function refreshRow(q){
+  var row = document.getElementById('reviewGrid').children[q];
+  var btns = row.querySelectorAll('button');
+  btns.forEach(b=>b.classList.remove('sel','wrong'));
+  var a = currentAns[q];
+  if(a>=0){
+    btns[a].classList.add('sel');
+    if(a !== KEY.kunci[q]) btns[a].classList.add('wrong');
+  }
+}
+function setAns(q,c){ currentAns[q]=c; refreshRow(q); updateSummary(); }
+function updateSummary(){
+  var benar=0, salah=0, kosong=0;
+  currentAns.forEach(function(a,q){
+    if(a<0) kosong++;
+    else if(a===KEY.kunci[q]) benar++;
+    else salah++;
+  });
+  var nilai = Math.round(benar/KEY.jumlahSoal*10000)/100;
+  currentScore = {benar:benar, salah:salah, kosong:kosong, nilai:nilai};
+  document.getElementById('summary').innerHTML =
+    '✅ Benar: <b>'+benar+'</b> &nbsp; ❌ Salah: <b>'+salah+'</b> &nbsp; ⬜ Kosong: <b>'+kosong+'</b>'+
+    '<br>Nilai: <b style="font-size:26px;color:var(--p)">'+nilai+'</b>';
+}
+
+/* ================= SIMPAN HASIL ================= */
+function saveResult(btn){
+  if(!currentAns) return;
+  var nama = document.getElementById('nama').value.trim();
+  if(!nama){ alert('Isi nama siswa dulu'); return; }
+  var jaw = currentAns.map(a=>a<0 ? '-' : 'ABCDE'[a]).join('');
+  var d = { nama:nama, kelas:document.getElementById('kelas').value.trim(),
+            jawaban:jaw, benar:currentScore.benar, salah:currentScore.salah,
+            kosong:currentScore.kosong, nilai:currentScore.nilai };
+  btn.disabled=true; btn.textContent='Menyimpan...';
+  google.script.run
+    .withSuccessHandler(function(){
+      alert('✔ Hasil '+nama+' tersimpan!\nNilai: '+d.nilai);
+      btn.disabled=false; btn.textContent='💾 Simpan Hasil';
+      document.getElementById('nama').value=''; document.getElementById('kelas').value='';
+      resetScan();
+    })
+    .withFailureHandler(function(e){ alert('Gagal: '+e.message); btn.disabled=false; btn.textContent='💾 Simpan Hasil'; })
+    .simpanHasil(d);
+}
+
+/* ================= TAB HASIL ================= */
+function loadResults(){
+  var w=document.getElementById('hasilWrap'); w.innerHTML='Memuat...';
+  google.script.run.withSuccessHandler(function(rows){
+    if(!rows.length){ w.innerHTML='<p class="hint">Belum ada data.</p>'; return; }
+    var h='<table><tr><th>Waktu</th><th>Nama</th><th>Kelas</th><th>Jawaban</th><th>B</th><th>S</th><th>K</th><th>Nilai</th></tr>';
+    rows.forEach(function(r){
+      h+='<tr><td>'+r.waktu+'</td><td>'+r.nama+'</td><td>'+r.kelas+'</td>'+
+         '<td style="text-align:left">'+r.jawaban+'</td><td>'+r.benar+'</td><td>'+r.salah+'</td><td>'+r.kosong+'</td><td><b>'+r.nilai+'</b></td></tr>';
+    });
+    w.innerHTML = h+'</table>';
+  }).ambilHasil();
+}
+
+/* ================= GENERATOR TEMPLATE (FORMAT MTS DARUL FALAH) =================
+   Semua koordinat memakai satuan A4 (794 x 1123), canvas di-scale sekali saja.
+   Latar putih digambar lebih dulu agar tidak tampil hitam di overlay. */
+function makeTemplate(){
+  var n = +numQ.value || 40, c = +numC.value || 4;
+  var PER = Q_PER_BLOCK, k = 3;                 // k = faktor ketajaman cetak (2 jika HP lemot)
+  var nb = Math.ceil(n/PER);
+  var PW = 794, PH = 1123;                      // ukuran A4 dalam satuan titik
+
+  var cv = document.createElement('canvas');
+  cv.width = PW*k; cv.height = PH*k;
+  var x = cv.getContext('2d');
+  x.scale(k, k);                                // scale sekali, gambar pakai satuan A4
+  x.fillStyle='#fff'; x.fillRect(0, 0, PW, PH); // LATAR PUTIH (wajib!)
+  x.fillStyle='#000'; x.strokeStyle='#000'; x.textAlign='left';
+
+  /* ---- 1. Kop sekolah (y: 24–170) ---- */
+  var hx=30, hy=24, hw=PW-60, hh=146;
+  x.lineWidth=2; x.strokeRect(hx,hy,hw,hh);
+  x.textAlign='center';
+  x.font='bold 14px Arial'; x.fillText(SCHOOL.yayasan, PW/2, hy+24);
+  x.font='bold 16px Arial'; x.fillText(SCHOOL.sekolah,  PW/2, hy+45);
+  x.font='9.5px Arial';
+  x.fillText(SCHOOL.alamat, PW/2, hy+62);
+  x.fillText(SCHOOL.kontak, PW/2, hy+75);
+  x.lineWidth=1; x.beginPath();
+  x.moveTo(hx+10,hy+84);   x.lineTo(hx+hw-10,hy+84);
+  x.moveTo(hx+10,hy+86.5); x.lineTo(hx+hw-10,hy+86.5); x.stroke();
+  x.font='bold 12px Arial';
+  x.fillText(SCHOOL.judul1, PW/2, hy+102);
+  x.fillText(SCHOOL.judul2, PW/2, hy+118);
+  x.fillText(SCHOOL.tahun,  PW/2, hy+134);
+
+  /* ---- 2. Identitas siswa (y: 192–234) ---- */
+  x.textAlign='left'; x.font='10.5px Arial';
+  var iy=192, dy=21;
+  function idRow(arr,x0){
+    arr.forEach(function(it,i){
+      var y=iy+i*dy;
+      x.fillText(it[0], x0, y);
+      x.fillText(':', x0+82, y);
+      x.beginPath(); x.moveTo(x0+90, y+2); x.lineTo(x0+90+it[1], y+2); x.stroke();
+    });
+  }
+  idRow([['Mata Pelajaran',150],['Hari',150],['Tanggal',150]], 45);
+  idRow([['Nama',180],['Kelas',110],['No. Peserta',110]], 430);
+
+  /* ---- 3. Banner pilihan ganda (y: 254–274) ---- */
+  var by=254;
+  x.fillRect(hx,by,hw,20);
+  x.fillStyle='#fff'; x.font='bold 10.5px Arial'; x.textAlign='center';
+  x.fillText('JAWABAN PILIHAN GANDA  (Hitamlah bulatan pada salah satu pilihan jawaban yang benar)', PW/2, by+14);
+
+  /* ---- 4. Blok jawaban (y: 292–732, langsung di bawah banner) ---- */
+  var M=30, GAP=14, NPAD=26, rowH=44;
+  var colW   = Math.floor((PW-2*M-nb*NPAD-(nb-1)*GAP)/nb/c);
+  var blockW = colW*c;
+  var totalW = nb*NPAD+(nb-1)*GAP+nb*blockW;
+  var startX = Math.round((PW-totalW)/2);
+  var gy     = by+38;
+  var R      = Math.floor(Math.min(colW,rowH)*0.34);
+  x.fillStyle='#000'; x.strokeStyle='#000';
+
+  for(var b=0;b<nb;b++){
+    var rows=Math.min(PER, n-b*PER);           // blok terakhir bisa < 10 soal
+    var gh=rowH*rows;
+    var bx=startX+b*(NPAD+blockW+GAP), gx=bx+NPAD;
+    x.font='bold 9.5px Arial'; x.textAlign='right';
+    for(var i=0;i<rows;i++)
+      x.fillText((b*PER+i+1)+'.', gx-6, gy+(i+0.5)*rowH+3.5);
+    x.textAlign='center'; x.font='bold 10px Arial';
+    for(var j=0;j<c;j++)
+      x.fillText('ABCDE'[j], gx+(j+0.5)*colW, gy-8);
+    x.lineWidth=1.3; x.strokeRect(gx, gy, blockW, gh);
+    x.lineWidth=0.7;
+    for(var j2=1;j2<c;j2++){ x.beginPath(); x.moveTo(gx+j2*colW, gy); x.lineTo(gx+j2*colW, gy+gh); x.stroke(); }
+    for(var i2=1;i2<rows;i2++){ x.beginPath(); x.moveTo(gx, gy+i2*rowH); x.lineTo(gx+blockW, gy+i2*rowH); x.stroke(); }
+    x.lineWidth=1.6;
+    for(var i3=0;i3<rows;i3++)
+      for(var j3=0;j3<c;j3++){
+        x.beginPath();
+        x.arc(gx+(j3+0.5)*colW, gy+(i3+0.5)*rowH, R, 0, 7);
+        x.stroke();
+      }
+  }
+  var blockBottom = gy + rowH*Math.min(PER,n);
+
+  /* ---- 5. Banner uraian + garis jawaban (menyesuaikan sisa halaman) ---- */
+  var ey = blockBottom + 16;
+  x.fillRect(hx, ey, hw, 18);
+  x.fillStyle='#fff'; x.font='bold 10.5px Arial'; x.textAlign='center';
+  x.fillText('JAWABAN SOAL URAIAN/ESSAY', PW/2, ey+13);
+  x.strokeStyle='#000'; x.lineWidth=1;
+  var LH=26;
+  for(var y2=ey+34; y2<=PH-40; y2+=LH){
+    x.beginPath(); x.moveTo(45, y2); x.lineTo(PW-45, y2); x.stroke();
+  }
+
+  /* ---- 6. NB bawah ---- */
+  x.fillStyle='#000';
+  x.fillRect(30, PH-24, 10, 10); x.fillRect(PW-40, PH-24, 10, 10);
+  x.textAlign='left'; x.font='italic bold 9.5px Arial';
+  x.fillText('NB. Jika kurang lanjutkan di belakang LJK', 46, PH-14);
+
+  document.getElementById('tplImg').src = cv.toDataURL('image/png');
+  document.getElementById('tplOverlay').style.display='block';
+}
+
+/* ================= INISIALISASI ================= */
+loadKey();
+</script>
+</body>
+</html></textarea>
+  <p class="hint">Aplikasi lengkap: kamera, deteksi OMR, kunci jawaban, generator template LJK, rekap hasil.</p>
+</section>
+
+</main>
+<footer>📝 Korektor LJK Web — HijraH45 · MIT License · github.com/h45labs</footer>
+<div id="toast"></div>
+
+<script>
+function getCode(w){return document.getElementById('ta-'+w).value.replace(/^\n/,'');}
+function copyCode(w){
+  var t=getCode(w);
+  var fb=function(){
+    var ta=document.getElementById('ta-'+w);
+    ta.classList.add('open');
+    ta.focus();ta.select();
+    var ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    toast(ok?'✔ Kode tersalin! Tempel (Ctrl+V) di Apps Script.':'⚠ Gagal — buka kode & salin manual.');
+    window.getSelection().removeAllRanges();
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){toast('✔ Kode tersalin! Tempel (Ctrl+V) di Apps Script.');},fb);
+  }else fb();
+}
+function dl(w){
+  var name=(w==='gs')?'Code.gs':'Index.html';
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([getCode(w)],{type:'text/plain;charset=utf-8'}));
+  a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href)},1500);
+  toast('⬇️ Mengunduh '+name+' ...');
+}
+function tg(w,btn){
+  var ta=document.getElementById('ta-'+w);
+  var open=ta.classList.toggle('open');
+  btn.textContent=open?'▲ Sembunyikan Kode':'▼ Tampilkan Kode';
+}
+function toast(m){
+  var t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},2400);
+}
+</script>
+</body>
+</html>

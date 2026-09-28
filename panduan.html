@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<title>Panduan Cepat — Korektor LJK | HijraH45</title>
+<style>
+:root{
+  --p:#4f46e5; --p2:#7c3aed; --p3:#a855f7;
+  --grad:linear-gradient(135deg,#4f46e5,#7c3aed);
+  --grad-g:linear-gradient(135deg,#10b981,#059669);
+  --ok:#059669; --bad:#e11d48;
+  --bg:#f1f4f9; --card:#ffffff; --line:#e8ecf4;
+  --txt:#0f172a; --sub:#64748b;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 10px 30px -12px rgba(16,24,40,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:
+    radial-gradient(800px 300px at 90% -50px, rgba(168,85,247,.08), transparent 60%),
+    radial-gradient(700px 300px at -10% 120px, rgba(79,70,229,.07), transparent 60%),
+    var(--bg);
+  color:var(--txt);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.55;padding-bottom:120px;
+}
+.hero{position:relative;overflow:hidden;text-align:center;color:#fff;
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 55%,#a855f7 100%);
+  padding:30px 16px 68px;border-radius:0 0 30px 30px}
+.hero::before,.hero::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+.hero::before{width:240px;height:240px;top:-90px;left:-70px}
+.hero::after{width:190px;height:190px;bottom:-80px;right:-50px;background:rgba(255,255,255,.09)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);
+  border-radius:999px;padding:6px 16px;font-size:13px;font-weight:600;position:relative;z-index:1}
+.hero h1{margin:12px 0 4px;font-size:clamp(22px,5vw,30px);letter-spacing:-.5px;position:relative;z-index:1}
+.hero p{margin:0;font-size:14px;opacity:.92;position:relative;z-index:1}
+.tabs{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;
+  transform:translateX(-50%);display:flex;gap:4px;z-index:50;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:999px;padding:6px;
+  box-shadow:0 12px 32px -8px rgba(16,24,40,.28)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:1px;text-decoration:none;
+  min-width:80px;padding:8px 12px;border-radius:999px;
+  font-size:11px;font-weight:600;color:var(--sub);transition:.2s;font-family:inherit}
+.tabs a .ti{font-size:19px;line-height:1.2}
+.tabs a.active{background:var(--grad);color:#fff;box-shadow:0 6px 16px -4px rgba(79,70,229,.5)}
+.tabs a:not(.active):hover{color:var(--p)}
+@media(min-width:768px){.tabs a{min-width:104px;font-size:12px}}
+.page{max-width:720px;margin:-46px auto 0;padding:0 14px;position:relative;z-index:2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.card-title b{font-size:15.5px;letter-spacing:-.2px}
+.step-num{flex-shrink:0;width:30px;height:30px;border-radius:10px;background:var(--grad);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+ol,ul{margin:0;padding-left:22px}
+li{margin:7px 0;font-size:14.5px}
+b.hl{color:#3730a3}
+.tip{background:#e8f5e9;border-left:4px solid var(--ok);border-radius:10px;
+  padding:10px 14px;font-size:13.5px;margin-top:12px}
+.warn{background:#fff8e1;border-left:4px solid #f59e0b;border-radius:10px;
+  padding:10px 14px;font-size:13.5px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{background:#eef2ff;color:#3730a3;text-align:left;padding:8px 10px;border-radius:8px 8px 0 0}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
+  border:none;border-radius:12px;padding:11px 18px;font-size:14.5px;font-weight:700;
+  font-family:inherit;cursor:pointer;color:#fff;min-height:44px;transition:transform .08s ease}
+.btn:active{transform:scale(.96)}
+.b1{background:var(--grad);box-shadow:0 6px 16px -6px rgba(79,70,229,.55)}
+.b3{background:var(--grad-g);box-shadow:0 6px 16px -6px rgba(16,185,129,.5)}
+.pill{display:inline-block;background:#eef2ff;color:#4338ca;border-radius:14px;
+  padding:3px 12px;font-size:12px;font-weight:700;margin:2px}
+footer{text-align:center;color:var(--sub);font-size:13px;padding:16px 10px 6px}
+footer a{color:var(--p);font-weight:700;text-decoration:none}
+footer .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+  color:#94a3b8;background:#fff;border:1px solid var(--line);border-radius:999px;
+  display:inline-block;padding:4px 14px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-badge">🎓 Panduan Cepat</div>
+  <h1>📝 Korektor LJK</h1>
+  <p>Instal · Pakai · Selesai — semua dalam satu halaman</p>
+</header>
+
+<div class="page">
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">🎯</span><b>Apa Ini?</b></div>
+    <ul>
+      <li>Guru <b>memfoto lembar jawaban siswa</b> → aplikasi mendeteksi bulatan otomatis → nilai langsung jadi</li>
+      <li>Murni <b>HTML + JavaScript</b> — tanpa framework, tanpa biaya</li>
+      <li>Format LJK: <span class="pill">40 soal</span> <span class="pill">4 pilihan (A–D)</span> <span class="pill">4 blok à 10</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">⚡</span><b>Versi Offline — Paling Cepat</b></div>
+    <ul>
+      <li>Tanpa instalasi: buka <b class="hl">local.html</b> langsung di browser</li>
+      <li>Data tersimpan di perangkat sendiri (localStorage) — <b>privat</b></li>
+      <li>Identitas sekolah bisa diedit pengguna (tombol 🏫 di tab Kunci)</li>
+      <li>Sudah termasuk <b>Export CSV</b>, <b>Backup</b>, dan <b>Restore</b></li>
+    </ul>
+    <div style="margin-top:10px">
+      <a class="btn b3" href="local.html">🚀 Buka Aplikasi Offline</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">🏫</span><b>Instal Versi Sekolah (± 5 Menit)</b></div>
+    <ol>
+      <li>Buat <b>Spreadsheet baru</b> → menu <b>Extensions → Apps Script</b></li>
+      <li>Salin kode <b class="hl">Code.gs</b> &amp; <b class="hl">Index.html</b> dari halaman <b>Installer</b></li>
+      <li>Paste: <code>Code.gs</code> ke file .gs; buat file HTML bernama <b>Index</b> untuk yang satunya</li>
+      <li><b>Deploy → New deployment → Web app</b> — Execute as: <b>Me</b>, Access: <b>Anyone</b></li>
+      <li>Buka URL <b>/exec</b> dari HP → selesai! 🎉</li>
+    </ol>
+    <div class="warn">⚠️ Jika kode pernah diubah: <b>Deploy → Manage deployments → ✏️ → New version → Deploy</b> agar perubahan tampil di URL /exec.</div>
+    <div style="margin-top:10px">
+      <a class="btn b1" href="install.html">📦 Buka Installer</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">📖</span><b>Cara Pakai</b></div>
+    <ol>
+      <li><b>🔑 Kunci:</b> atur jenis ujian, semester (Ganjil/Genap), tahun pelajaran, jumlah soal → isi kunci → simpan</li>
+      <li><b>🖨 Template:</b> klik <b>Buat Template LJK</b> → <b>⬇️ Unduh PNG</b> → cetak A4 (skala 100%) → fotokopi</li>
+      <li><b>📸 Koreksi:</b> foto lembar siswa → ketuk 4 sudut kotak blok 1–10 → <b>Deteksi</b> → ulangi blok 11–20, 21–30, 31–40 <i>(satu foto untuk semua blok)</i></li>
+      <li><b>✅ Periksa</b> hasil (ketuk untuk memperbaiki) → isi nama → <b>💾 Simpan</b></li>
+      <li><b>📊 Hasil:</b> rekap nilai + ekspor (Sheets / CSV)</li>
+    </ol>
+    <div class="tip">💡 <b>Tips foto akurat:</b> tegak lurus dari atas · cahaya merata tanpa bayangan · bulatan dihitam <b>pekat &amp; penuh</b> dengan pulpen hitam · ketuk sudut <b>tepat di pojok kotak blok</b> (bukan huruf A–D / nomor soal).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="step-num">🔧</span><b>Masalah Umum</b></div>
+    <table>
+      <tr><th>Gejala</th><th>Solusi</th></tr>
+      <tr><td>Jawaban terisi tapi terbaca kosong</td><td>Turunkan <b>Sensitivitas</b> (≈0.35) / hitaman lebih pekat</td></tr>
+      <tr><td>Bulatan kosong ikut terbaca</td><td>Naikkan <b>Sensitivitas</b> (≈0.55) / sudut lebih tepat</td></tr>
+      <tr><td>Kamera tidak muncul</td><td>Wajib lewat <b>https</b> (GitHub Pages ✅) / gunakan 📁 Unggah Foto</td></tr>
+      <tr><td>Identitas tertutup kop</td><td>Gunakan versi terbaru (jarak 26px, kop tanpa border)</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<div class="tabs">
+  <a href="index.html"><span class="ti">🏠</span><span>Beranda</span></a>
+  <a href="local.html"><span class="ti">⚡</span><span>Aplikasi</span></a>
+  <a href="install.html"><span class="ti">📦</span><span>Installer</span></a>
+  <a class="active" href="panduan.html"><span class="ti">🎓</span><span>Panduan</span></a>
+  <a href="README.html"><span class="ti">📚</span><span>Docs</span></a>
+</div>
+
+<footer>
+  <strong>Developer by. <a href="https://github.com/h45labs">HijraH45</a></strong><br>
+  <span class="mono">KOREKTOR—LJK · WEB v2.0 · PANDUAN</span>
+</footer>
+
+</body>
+</html>
