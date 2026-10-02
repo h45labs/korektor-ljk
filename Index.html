@@ -760,9 +760,10 @@ function saveResult(btn){
     .simpanHasil(d);
 }
 
-/* ================= KOREKSI MANUAL ================= */
+/* ================= KOREKSI MANUAL (FIXED) ================= */
 function startManual(){
   if(!KEY){ alert('Atur kunci jawaban dulu di tab 🔑 Kunci!'); showTab('key'); return; }
+  currentAns = new Array(KEY.jumlahSoal).fill(-1);   /* FIX: diisi SEBELUM loop */
   var L='ABCDE'.slice(0, KEY.jumlahPilihan);
   var g=document.getElementById('manGrid');
   g.innerHTML='';
@@ -780,12 +781,12 @@ function startManual(){
   document.getElementById('summary').style.display='block';
   document.getElementById('manSaveRow').style.display='flex';
   document.getElementById('btnSave').style.display='inline-flex';
-  currentAns = new Array(KEY.jumlahSoal).fill(-1);
   updateSummary();
   g.scrollIntoView({behavior:'smooth', block:'start'});
 }
 function refreshMan(q){
   var row = document.getElementById('manGrid').children[q];
+  if(!row || !currentAns) return;                     /* pengaman tambahan */
   var btns = row.querySelectorAll('button');
   btns.forEach(b=>b.classList.remove('sel','wrong'));
   var a = currentAns[q];
@@ -910,7 +911,7 @@ function downloadTemplate(){
 function openTpl(){ document.getElementById('tplOverlay').style.display='block'; }
 function closeTpl(){ document.getElementById('tplOverlay').style.display='none'; }
 
-/* ================= GENERATOR TEMPLATE (FORMAT MTS DARUL FALAH) ================= */
+/* ================= GENERATOR TEMPLATE (MTS DARUL FALAH) ================= */
 function makeTemplate(){
   var n = +numQ.value || 40, c = +numC.value || 4;
   var PER = Q_PER_BLOCK, k = 3;
