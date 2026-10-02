@@ -68,7 +68,7 @@ function ambilHasil() {
   const tz = Session.getScriptTimeZone();
   return sh.getRange(2, 1, n - 1, 8).getValues().map(function(r, i) {
     return {
-      _row: i + 2,   // nomor baris di sheet (untuk hapus per baris)
+      _row: i + 2,
       waktu: Utilities.formatDate(new Date(r[0]), tz, 'dd/MM/yyyy HH:mm'),
       nama: r[1], kelas: r[2], jawaban: r[3],
       benar: r[4], salah: r[5], kosong: r[6], nilai: r[7]
@@ -76,7 +76,7 @@ function ambilHasil() {
   });
 }
 
-// BARU v3: hapus satu baris hasil
+// v3: hapus satu baris hasil
 function hapusHasil(rowNum) {
   const sh = getSheet_(SHEET_HASIL, null);
   const n = sh.getLastRow();
